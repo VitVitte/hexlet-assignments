@@ -1,0 +1,21 @@
+plugins {
+    id 'checkstyle'
+}
+
+repositories {
+    mavenCentral()
+}
+
+checkstyle {
+    (toolVersion = '8.41')
+}
+
+task checkExercises (type: Checkstyle) {
+    file('.').eachDir { course ->
+        def exercise = project.hasProperty('exercise') ? project.exercise : ''
+        source course.name + '/' + exercise
+        include '**/*.java'
+        exclude '**/build/**'
+        classpath = files()
+    }
+}
