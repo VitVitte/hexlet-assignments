@@ -27,12 +27,13 @@ public class Application {
     private UserProperties userInfo;
 
     @GetMapping("/admins")
-    public List<User> indexAdmins() {
+    public List<String> indexAdmins() {
         List<String> adminMailList = userInfo.getAdmins();
 
         return users.stream()
                 .filter(u -> adminMailList.contains(u.getEmail()))
-                .sorted(Comparator.comparing(User::getName))
+                .map(User::getName)
+                .sorted()
                 .collect(Collectors.toList());
     }
     // END
