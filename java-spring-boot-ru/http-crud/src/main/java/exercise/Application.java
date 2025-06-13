@@ -48,7 +48,7 @@ public class Application {
     @GetMapping("/posts/{id}")
     public ResponseEntity<Post> getPostById(@PathVariable String id) {
         for (Post post : posts) {
-            if (post.getId() == id) {
+            if (Objects.equals(post.getId(), id)) {
                 return ResponseEntity.ok(post);
             }
         }
