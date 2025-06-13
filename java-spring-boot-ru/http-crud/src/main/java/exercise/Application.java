@@ -58,8 +58,6 @@ public class Application {
     // Добавить новый пост
     @PostMapping("/posts")
     public Post addPost(@RequestBody Post newPost) {
-        String newId = !posts.isEmpty() ? posts.get(posts.size() - 1).getId() + 1 : "1";
-        newPost.setId(newId);
         posts.add(newPost);
         return newPost;
     }
