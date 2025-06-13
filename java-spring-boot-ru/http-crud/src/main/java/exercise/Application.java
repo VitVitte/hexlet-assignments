@@ -1,8 +1,13 @@
 package exercise;
 
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -41,7 +46,7 @@ public class Application {
 
     // Получить пост по ID
     @GetMapping("/posts/{id}")
-    public ResponseEntity<Post> getPostById(@PathVariable int id) {
+    public ResponseEntity<Post> getPostById(@PathVariable String id) {
         for (Post post : posts) {
             if (post.getId() == id) {
                 return ResponseEntity.ok(post);
@@ -53,7 +58,7 @@ public class Application {
     // Добавить новый пост
     @PostMapping("/posts")
     public Post addPost(@RequestBody Post newPost) {
-        int newId = posts.size() > 0 ? posts.get(posts.size() - 1).getId() + 1 : 1;
+        String newId = !posts.isEmpty() ? posts.get(posts.size() - 1).getId() + 1 : "1";
         newPost.setId(newId);
         posts.add(newPost);
         return newPost;
@@ -61,9 +66,9 @@ public class Application {
 
     // Обновить пост по ID
     @PutMapping("/posts/{id}")
-    public ResponseEntity<Post> updatePost(@PathVariable int id, @RequestBody Post updatedPost) {
+    public ResponseEntity<Post> updatePost(@PathVariable String id, @RequestBody Post updatedPost) {
         for (int i = 0; i < posts.size(); i++) {
-            if (posts.get(i).getId() == id) {
+            if (Objects.equals(posts.get(i).getId(), id)) {
                 updatedPost.setId(id);
                 posts.set(i, updatedPost);
                 return ResponseEntity.ok(updatedPost);
@@ -74,11 +79,11 @@ public class Application {
 
     // Удалить пост по ID
     @DeleteMapping("/posts/{id}")
-    public ResponseEntity<Void> deletePost(@PathVariable int id) {
+    public ResponseEntity<Void> deletePost(@PathVariable String id) {
         Iterator<Post> iterator = posts.iterator();
         while (iterator.hasNext()) {
             Post post = iterator.next();
-            if (post.getId() == id) {
+            if (Objects.equals(post.getId(), id)) {
                 iterator.remove();
                 return ResponseEntity.ok().build();
             }
