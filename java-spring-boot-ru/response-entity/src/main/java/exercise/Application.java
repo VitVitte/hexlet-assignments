@@ -32,19 +32,21 @@ public class Application {
     // BEGIN
     // Получить все посты
     @GetMapping("/posts")
-    public List<Post> getPosts(@RequestParam(value = "page", defaultValue = "1") int page,
-                               @RequestParam(value = "limit", defaultValue = "10") int limit) {
+    public ResponseEntity<List<Post>> getPosts(@RequestParam(value = "page", defaultValue = "1") int page,
+                                               @RequestParam(value = "limit", defaultValue = "10") int limit) {
         int startIndex = (page - 1) * limit;
         int endIndex = Math.min(startIndex + limit, posts.size());
 
+        List<Post> result;
         if (startIndex >= posts.size()) {
-            var result = Collections.emptyList();
+            result = Collections.emptyList();
+        } else {
+            result = posts.stream().toList().subList(startIndex, endIndex);
         }
 
-        var result = posts.stream().toList().subList(startIndex, endIndex);
         return ResponseEntity.ok()
                 .header("X-Total-Count", String.valueOf(posts.size()))
-                .body(result).getBody();
+                .body(result);
     }
 
     // Получить пост по ID
