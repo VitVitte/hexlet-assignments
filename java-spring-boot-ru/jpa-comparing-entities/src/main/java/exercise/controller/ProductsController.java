@@ -1,6 +1,8 @@
 package exercise.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -10,7 +12,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import java.util.List;
-import java.util.Objects;
 import exercise.model.Product;
 import exercise.repository.ProductRepository;
 import exercise.exception.ResourceNotFoundException;
@@ -30,14 +31,11 @@ public class ProductsController {
 
     // BEGIN
     @PostMapping(path = "")
-    public Product create(@RequestBody Product newProduct) {
+    public ResponseEntity<Product> create(@RequestBody Product newProduct) {
         List<Product> allProducts = productRepository.findAll();
 
         boolean exists = allProducts.stream()
-                .anyMatch(p ->
-                        Objects.equals(p.getTitle(), newProduct.getTitle())
-                                && p.getPrice() == newProduct.getPrice()
-                );
+                .anyMatch(p -> p.equals(newProduct));
 
         if (exists) {
             throw new ResourceAlreadyExistsException("Product with title '"
@@ -45,7 +43,8 @@ public class ProductsController {
                     + newProduct.getPrice() + "' already exists");
         }
 
-        return productRepository.save(newProduct);
+        Product savedProduct = productRepository.save(newProduct);
+        return new ResponseEntity<>(savedProduct, HttpStatus.CREATED);
     }
     // END
 
