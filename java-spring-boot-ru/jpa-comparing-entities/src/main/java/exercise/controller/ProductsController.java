@@ -9,12 +9,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseStatus;
-
 import java.util.List;
 import java.util.Objects;
-
 import exercise.model.Product;
 import exercise.repository.ProductRepository;
 import exercise.exception.ResourceNotFoundException;
@@ -39,8 +35,8 @@ public class ProductsController {
 
         boolean exists = allProducts.stream()
                 .anyMatch(p ->
-                        Objects.equals(p.getTitle(), newProduct.getTitle()) &&
-                                p.getPrice() == newProduct.getPrice()
+                        Objects.equals(p.getTitle(), newProduct.getTitle())
+                                && p.getPrice() == newProduct.getPrice()
                 );
 
         if (exists) {
