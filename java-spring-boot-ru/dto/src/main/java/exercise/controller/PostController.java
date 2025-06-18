@@ -1,5 +1,6 @@
 package exercise.controller;
 
+import exercise.exception.ResourceNotFoundException;
 import exercise.repository.CommentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -41,7 +42,7 @@ public class PostController {
         Optional<Post> optionalPost = postRepository.findById(id);
         return optionalPost
                 .map(post -> ResponseEntity.ok(convertToPostDTO(post)))
-                .orElse(ResponseEntity.status(404).body("Post with id " + id + " not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Post with id " + id + " not found"));
     }
 
         private PostDTO convertToPostDTO(Post post) {
