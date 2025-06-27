@@ -1,0 +1,10 @@
+# BEGIN
+spring:
+  config:
+    activate:
+      on-profile: stage
+  datasource:
+    url: jdbc:h2:file:./test
+    username: admin
+    password: admin
+# END
