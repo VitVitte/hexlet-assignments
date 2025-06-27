@@ -31,40 +31,32 @@ public class BooksController {
     @Autowired
     private BookMapper bookMapper;
 
-    @GetMapping
-    public List<BookDTO> getAllBooks() {
-        return bookService.getAllBooks()
-                .stream()
-                .map(bookMapper::map)
-                .collect(Collectors.toList());
+    @GetMapping("")
+    List<BookDTO> index() {
+        return bookService.getAllBooks();
+    }
+
+    @PostMapping("")
+    @ResponseStatus(HttpStatus.CREATED)
+    BookDTO create(@Valid @RequestBody BookCreateDTO bookData) {
+        return bookService.createBook(bookData);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<BookDTO> getBook(@PathVariable Long id) {
-        Book book = bookService.getBookById(id);
-        return ResponseEntity.ok(bookMapper.map(book));
-    }
-
-    @PostMapping
-    public ResponseEntity<BookDTO> createBook(@RequestBody @Valid BookCreateDTO createDTO) {
-        Book savedBook = bookService.saveBook(bookMapper.map(createDTO));
-        return ResponseEntity.status(HttpStatus.CREATED).body(bookMapper.map(savedBook));
+    @ResponseStatus(HttpStatus.OK)
+    BookDTO show(@PathVariable Long id) {
+        return bookService.getBookById(id);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<BookDTO> updateBook(@PathVariable Long id, @RequestBody @Valid BookUpdateDTO updateDTO) {
-        // Получаем существующую книгу
-        Book book = bookService.getBookById(id);
-        // Обновляем поля
-        bookMapper.update(updateDTO, book);
-        // Сохраняем и получаем обновленную книгу
-        Book updatedBook = bookService.updateBook(book);
-        return ResponseEntity.ok(bookMapper.map(updatedBook));
+    @ResponseStatus(HttpStatus.OK)
+    BookDTO update(@RequestBody @Valid BookUpdateDTO bookData, @PathVariable Long id) {
+        return bookService.updateBook(bookData, id);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteBook(@PathVariable Long id) {
-        bookService.deleteById(id);
-        return ResponseEntity.noContent().build();
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    void destroy(@PathVariable Long id) {
+        bookService.deleteBook(id);
     }
 }

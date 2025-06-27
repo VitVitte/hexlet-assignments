@@ -29,37 +29,43 @@ public class BookService {
     @Autowired
     private JsonNullableMapper jsonNullableMapper;
 
-    public List<Book> getAllBooks() {
-        return bookRepository.findAll();
+
+    @Autowired
+    private BookMapper bookMapper;
+
+    public List<BookDTO> getAllBooks() {
+        var books = bookRepository.findAll();
+
+        return books.stream()
+                .map(bookMapper::map)
+                .toList();
     }
 
-    public Book getBookById(Long id) {
-        return bookRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Книга с id " + id + " не найдена"));
+    public BookDTO createBook(BookCreateDTO bookData) {
+        var book = bookMapper.map(bookData);
+        bookRepository.save(book);
+        var bookDto = bookMapper.map(book);
+        return bookDto;
     }
 
-    public Book saveBook(Book book) {
-        // Проверка автора
-        Long authorId = book.getAuthor().getId();
-        if (authorId == null || !authorRepository.existsById(authorId)) {
-            throw new IllegalArgumentException("Автор с id " + authorId + " не найден");
-        }
-        // Установка полного объекта автора
-        Author author = authorRepository.findById(authorId)
-                .orElseThrow(() -> new ResourceNotFoundException("Автор с id " + authorId + " не найден"));
-        book.setAuthor(author);
-        return bookRepository.save(book);
+    public BookDTO getBookById(Long id) {
+        var book = bookRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Book not Found: " + id));
+        var bookDto = bookMapper.map(book);
+        return bookDto;
     }
 
-    public Book updateBook(Book book) {
-        // Этот метод предполагает, что book уже содержит все обновленные поля
-        return saveBook(book);
+    public BookDTO updateBook(BookUpdateDTO bookData, Long id) {
+        var book = bookRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Book not Found: " + id));
+
+        bookMapper.update(bookData, book);
+        bookRepository.save(book);
+        var bookDto = bookMapper.map(book);
+        return bookDto;
     }
 
-    public void deleteById(Long id) {
-        if (!bookRepository.existsById(id)) {
-            throw new ResourceNotFoundException("Книга с id " + id + " не найдена");
-        }
+    public void deleteBook(Long id) {
         bookRepository.deleteById(id);
     }
 }
