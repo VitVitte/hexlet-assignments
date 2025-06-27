@@ -1,0 +1,3 @@
+remove:
+  - exercise/simple_blog/articles
+  - exercise/simple_blog/categories
